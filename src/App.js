@@ -1,93 +1,68 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Peer from 'peerjs';
 
-const App = () => {
-  const [peer, setPeer] = useState(null);
-  const [myStream, setMyStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
+
+function App() {
+  const [peerId, setPeerId] = useState('');
+  const [remotePeerIdValue, setRemotePeerIdValue] = useState('');
   const remoteVideoRef = useRef(null);
+  const currentUserVideoRef = useRef(null);
+  const peerInstance = useRef(null);
 
   useEffect(() => {
-    // Create a new Peer object when the component mounts
     const peer = new Peer();
 
-    // Set up event listeners for Peer object
-    peer.on('open', () => {
-      console.log('Connected to PeerServer with ID:', peer.id);
+    peer.on('open', (id) => {
+      setPeerId(id)
     });
 
     peer.on('call', (call) => {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          // Answer the incoming call and add local stream
-          call.answer(stream);
+      var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-          // Set up event listener for stream from remote peer
-          call.on('stream', (remoteStream) => {
-            setRemoteStream(remoteStream);
-          });
-        })
-        .catch((error) => {
-          console.error('Error accessing media devices:', error);
+      getUserMedia({ video: true, audio: true }, (mediaStream) => {
+        currentUserVideoRef.current.srcObject = mediaStream;
+        currentUserVideoRef.current.play();
+        call.answer(mediaStream)
+        call.on('stream', function(remoteStream) {
+          remoteVideoRef.current.srcObject = remoteStream
+          remoteVideoRef.current.play();
         });
-    });
-
-    setPeer(peer);
-
-    return () => {
-      // Clean up Peer object when the component unmounts
-      peer.disconnect();
-      peer.destroy();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (myStream && remoteVideoRef.current) {
-      // Attach local stream to the video element
-      const localVideo = document.getElementById('local-video');
-      localVideo.srcObject = myStream;
-
-      // Attach remote stream to the video element
-      const remoteVideo = remoteVideoRef.current;
-      remoteVideo.srcObject = remoteStream;
-    }
-  }, [myStream, remoteStream]);
-
-  const handleCallClick = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        // Set local stream
-        setMyStream(stream);
-
-        // Call the remote peer
-        const call = peer.call('remote-peer-id', stream);
-
-        // Set up event listener for stream from remote peer
-        call.on('stream', (remoteStream) => {
-          setRemoteStream(remoteStream);
-        });
-      })
-      .catch((error) => {
-        console.error('Error accessing media devices:', error);
       });
-  };
+    })
+
+    peerInstance.current = peer;
+  }, [])
+
+  const call = (remotePeerId) => {
+    var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+    getUserMedia({ video: true, audio: true }, (mediaStream) => {
+
+      currentUserVideoRef.current.srcObject = mediaStream;
+      currentUserVideoRef.current.play();
+
+      const call = peerInstance.current.call(remotePeerId, mediaStream)
+
+      call.on('stream', (remoteStream) => {
+        remoteVideoRef.current.srcObject = remoteStream
+        remoteVideoRef.current.play();
+      });
+    });
+  }
 
   return (
-    <div>
-      <h1>Video Chat</h1>
+    <div className="App">
+      <h1>Current user id is {peerId}</h1>
+      <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
+      <button onClick={() => call(remotePeerIdValue)}>Call</button>
       <div>
-        <h2>Local Video</h2>
-        <video id="local-video" autoPlay muted playsInline />
+        <video ref={currentUserVideoRef} />
       </div>
       <div>
-        <h2>Remote Video</h2>
-        <video ref={remoteVideoRef} autoPlay playsInline />
+        <video ref={remoteVideoRef} />
       </div>
-      <button onClick={handleCallClick}>Call</button>
     </div>
   );
-};
+}
 
 export default App;
