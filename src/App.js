@@ -5,6 +5,7 @@ import Peer from 'peerjs';
 function App() {
   const [peerId, setPeerId] = useState('');
   const [remotePeerIdValue, setRemotePeerIdValue] = useState('');
+  const [using, setusing] = useState('');
   const remoteVideoRef = useRef(null);
   const currentUserVideoRef = useRef(null);
   const peerInstance = useRef(null);
@@ -20,36 +21,47 @@ function App() {
     peer.on('call', (call) => {
       var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
+
       getUserMedia({ video: true, audio: true }, (mediaStream) => {
         currentUserVideoRef.current.srcObject = mediaStream;
         currentUserVideoRef.current.play();
+
         call.answer(mediaStream)
-        call.on('stream', function(remoteStream) {
+
+        call.on('stream', function (remoteStream) {
           remoteVideoRef.current.srcObject = remoteStream
           remoteVideoRef.current.play();
         });
       });
-      
-     
+
     })
 
     peer.on('close', () => {
-      alert("the call is closed")
+
     });
-    
+
     peerInstance.current = peer;
   }, [])
 
-  const EndCall = ()=>{
-    if(onlinecall.current){
+  const EndCall = () => {
+    if (onlinecall.current) {
       onlinecall.current.close();
+
     }
+    const remoteVideo = document.querySelector('#remoteVideo');
+    remoteVideo && remoteVideo.remove();
+
+
+    peerInstance.current.on('close', () => {
+      peerInstance.current.disconnect();
+      peerInstance.current.destroy()
+    });
   }
 
   const Call = (remotePeerId) => {
     var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-    getUserMedia({  audio: true }, (mediaStream) => {
+    getUserMedia({ audio: true }, (mediaStream) => {
 
       currentUserVideoRef.current.srcObject = mediaStream;
       currentUserVideoRef.current.play();
@@ -57,49 +69,68 @@ function App() {
       const call = peerInstance.current.call(remotePeerId, mediaStream)
       onlinecall.current = call;
 
+      setusing("call")
+
       call.on('stream', (remoteStream) => {
         remoteVideoRef.current.srcObject = remoteStream
         remoteVideoRef.current.play();
       });
-    })};
+    })
+  };
 
 
-    const Video = (remotePeerId) => {
-      var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-  
-      getUserMedia({  video: true, audio: true }, (mediaStream) => {
-  
-        currentUserVideoRef.current.srcObject = mediaStream;
-        currentUserVideoRef.current.play();
-  
-        const call = peerInstance.current.call(remotePeerId, mediaStream)
-        onlinecall.current = call;
+  const Video = (remotePeerId) => {
+    var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-        call.on('stream', (remoteStream) => {
-          remoteVideoRef.current.srcObject = remoteStream
-        });
-      })};
+    getUserMedia({ video: true, audio: true }, (mediaStream) => {
 
-      const handleCopy = () => {
-        navigator.clipboard.writeText(peerId); // copy text to clipboard
-      };
-    
+      currentUserVideoRef.current.srcObject = mediaStream;
+      currentUserVideoRef.current.play();
+
+      const call = peerInstance.current.call(remotePeerId, mediaStream)
+      onlinecall.current = call;
+
+      setusing("video")
+
+      call.on('stream', (remoteStream) => {
+        remoteVideoRef.current.srcObject = remoteStream
+      });
+    })
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(peerId);
+  };
+
+
+
+
 
   return (
     <div className="App">
-      <h3>Current user id is {peerId}</h3>
-      <button onClick={handleCopy}>Copy your id</button> <br></br>
-      <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
-      <button onClick={() => Call(remotePeerIdValue)}>Call</button>
-      <button onClick={() => Video(remotePeerIdValue)}>Video</button>
+      <div>
+        <h3>Current user id is {peerId}</h3>
+      </div>
+      <div>
+        <button onClick={handleCopy}>Copy your id</button> <br></br>
+      </div>
+      <div>
+        <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
+        <button onClick={() => Call(remotePeerIdValue)}>Call</button>
+        <button onClick={() => Video(remotePeerIdValue)}>Video</button>
+
+      </div>
+      <div>
+        <p>{using && "on " + using}</p>
+      </div>
       <div>
         <video ref={currentUserVideoRef} />
       </div>
       <div>
-        <video ref={remoteVideoRef} />
+        <video ref={remoteVideoRef} id="remoteVideo" />
       </div>
       <div>
-        <button onClick={async ()=> EndCall()}>End</button>
+        <button onClick={async () => EndCall()}>End</button>
       </div>
     </div>
   );
