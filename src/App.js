@@ -33,7 +33,7 @@ function App() {
     peerInstance.current = peer;
   }, [])
 
-  const call = (remotePeerId) => {
+  const Call = (remotePeerId) => {
     var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
     getUserMedia({ video: true, audio: true }, (mediaStream) => {
@@ -47,19 +47,39 @@ function App() {
         remoteVideoRef.current.srcObject = remoteStream
         remoteVideoRef.current.play();
       });
-    });
-  }
+    })};
+
+
+    const Video = (remotePeerId) => {
+      var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  
+      getUserMedia({ audio: true }, (mediaStream) => {
+  
+        currentUserVideoRef.current.srcObject = mediaStream;
+        currentUserVideoRef.current.play();
+  
+        const call = peerInstance.current.call(remotePeerId, mediaStream)
+  
+        call.on('stream', (remoteStream) => {
+          remoteVideoRef.current.srcObject = remoteStream
+          remoteVideoRef.current.play();
+        });
+      })};
 
   return (
     <div className="App">
       <h1>Current user id is {peerId}</h1>
       <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
-      <button onClick={() => call(remotePeerIdValue)}>Call</button>
+      <button onClick={() => Call(remotePeerIdValue)}>Call</button>
+      <button onClick={() => Video(remotePeerIdValue)}>Video</button>
       <div>
         <video ref={currentUserVideoRef} />
       </div>
       <div>
         <video ref={remoteVideoRef} />
+      </div>
+      <div>
+        <button onClick={()=> peerInstance.destroyed()}>End</button>
       </div>
     </div>
   );
