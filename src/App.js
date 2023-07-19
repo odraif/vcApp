@@ -36,10 +36,6 @@ function App() {
 
     })
 
-    peer.on('close', () => {
-
-    });
-
     peerInstance.current = peer;
   }, [])
 
@@ -50,8 +46,7 @@ function App() {
     }
     const remoteVideo = document.querySelector('#remoteVideo');
     remoteVideo && remoteVideo.remove();
-
-
+    
     peerInstance.current.on('close', () => {
       peerInstance.current.disconnect();
       peerInstance.current.destroy()
@@ -93,7 +88,8 @@ function App() {
       setusing("video")
 
       call.on('stream', (remoteStream) => {
-        remoteVideoRef.current.srcObject = remoteStream
+        remoteVideoRef.current.srcObject = remoteStream;
+        remoteVideoRef.current.play();
       });
     })
   };
