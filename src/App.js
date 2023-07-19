@@ -8,6 +8,7 @@ function App() {
   const remoteVideoRef = useRef(null);
   const currentUserVideoRef = useRef(null);
   const peerInstance = useRef(null);
+  const onlinecall = useRef(null);
 
   useEffect(() => {
     const peer = new Peer();
@@ -28,20 +29,33 @@ function App() {
           remoteVideoRef.current.play();
         });
       });
+      
+     
     })
 
+    peer.on('close', () => {
+      alert("the call is closed")
+    });
+    
     peerInstance.current = peer;
   }, [])
+
+  const EndCall = ()=>{
+    if(onlinecall.current){
+      onlinecall.current.close();
+    }
+  }
 
   const Call = (remotePeerId) => {
     var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-    getUserMedia({ video: true, audio: true }, (mediaStream) => {
+    getUserMedia({  audio: true }, (mediaStream) => {
 
       currentUserVideoRef.current.srcObject = mediaStream;
       currentUserVideoRef.current.play();
 
       const call = peerInstance.current.call(remotePeerId, mediaStream)
+      onlinecall.current = call;
 
       call.on('stream', (remoteStream) => {
         remoteVideoRef.current.srcObject = remoteStream
@@ -53,22 +67,28 @@ function App() {
     const Video = (remotePeerId) => {
       var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
   
-      getUserMedia({ audio: true }, (mediaStream) => {
+      getUserMedia({  video: true, audio: true }, (mediaStream) => {
   
         currentUserVideoRef.current.srcObject = mediaStream;
         currentUserVideoRef.current.play();
   
         const call = peerInstance.current.call(remotePeerId, mediaStream)
-  
+        onlinecall.current = call;
+
         call.on('stream', (remoteStream) => {
           remoteVideoRef.current.srcObject = remoteStream
-          remoteVideoRef.current.play();
         });
       })};
 
+      const handleCopy = () => {
+        navigator.clipboard.writeText(peerId); // copy text to clipboard
+      };
+    
+
   return (
     <div className="App">
-      <h1>Current user id is {peerId}</h1>
+      <h3>Current user id is {peerId}</h3>
+      <button onClick={handleCopy}>Copy your id</button> <br></br>
       <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
       <button onClick={() => Call(remotePeerIdValue)}>Call</button>
       <button onClick={() => Video(remotePeerIdValue)}>Video</button>
@@ -79,7 +99,7 @@ function App() {
         <video ref={remoteVideoRef} />
       </div>
       <div>
-        <button onClick={()=> peerInstance.destroyed()}>End</button>
+        <button onClick={async ()=> EndCall()}>End</button>
       </div>
     </div>
   );
