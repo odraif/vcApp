@@ -3,7 +3,7 @@ import Peer from 'peerjs';
 import { useParams } from 'react-router';
 
 
-function App() {
+function AppLink() {
 
   document.title = "VCtalk";
 
@@ -138,7 +138,7 @@ const sendLink = ()=>{
 }
 
   return (
-    <div className="App">
+    <div className="Link">
       <div>
         <h3>Current user id is {peerId}</h3>
       </div>
@@ -168,4 +168,4 @@ const sendLink = ()=>{
   );
 }
 
-export default App;
+export default AppLink;
