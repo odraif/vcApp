@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Peer from 'peerjs';
 import { useParams } from 'react-router';
-
+import { MdCallEnd,MdLink,MdVideocam } from "react-icons/md";
 
 function AppLink() {
 
@@ -138,33 +138,38 @@ const sendLink = ()=>{
 }
 
   return (
-    <div className="Link">
-      <div>
-        <h3>Current user id is {peerId}</h3>
-      </div>
-      <div>
-        <button onClick={handleCopy}>Copy your id</button> <br></br>
-        <button onClick={sendLink}>Copy your link</button> <br></br>
-      </div>
-      <div>
+    <div className="App">
+    <div className='userid'>
+      <h3>{peerId}</h3>
+      <button onClick={sendLink}><MdLink></MdLink></button>
+    </div>
+    <div>
+      <button onClick={handleCopy} hidden>Copy your id</button> <br></br>
+      
+    </div>
+    <div className='callbyid'>
+      <div className='input'>
         <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
-        <button onClick={async () => Call(remotePeerIdValue)} disabled hidden>Call</button>
-        <button onClick={async () => Video(remotePeerIdValue)}>Video</button>
+      </div>
+      <button onClick={async () => Call(remotePeerIdValue)} disabled hidden>Call</button>
+      <button onClick={async () => Video(remotePeerIdValue)}><MdVideocam></MdVideocam></button>
 
+    </div>
+    <div>
+      <p>{using && "on " + using}</p>
+    </div>
+    <div className='videoBox'>
+      <div>
+        <video ref={currentUserVideoRef} className="me" />
       </div>
       <div>
-        <p>{using && "on " + using}</p>
-      </div>
-      <div>
-        <video ref={currentUserVideoRef} />
-      </div>
-      <div>
-        <video ref={remoteVideoRef} id="remoteVideo" />
-      </div>
-      <div>
-        <button onClick={async () => EndCall()}>End</button>
+        <video ref={remoteVideoRef} id="remoteVideo" className="other" />
       </div>
     </div>
+    <div className='functionbar'>
+      <button onClick={async () => EndCall()}><MdCallEnd ></MdCallEnd></button>
+    </div>
+  </div>
   );
 }
 

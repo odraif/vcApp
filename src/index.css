@@ -40,6 +40,7 @@ code {
   width: 40%;
   margin: auto;
   border-radius: 18px;
+  
 }
 
 .functionbar button{
@@ -59,7 +60,7 @@ code {
   cursor: pointer;
 }
 .userid{
-  position: absolute;
+  position:fixed;
   top:90dvh;
   left:10px;
   color:#bbbbbb6c;
