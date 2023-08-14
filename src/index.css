@@ -1,13 +1,116 @@
 body {
   margin: 0;
+
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.App{
+  background-color: #4f4f5a;
+  height: 100dvh;
+  width: 100dvw;
+  
+}
+
+.me , .other{
+  border: 1px solid #000;
+  object-fit: cover;
+  width: 500px;
+  margin: 50px;
+}
+
+.videoBox{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.functionbar{
+  background-color: #87879ba6;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  margin: auto;
+  border-radius: 18px;
+}
+
+.functionbar button{
+  background-color: #f74747;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  font-size: 30px;
+}
+
+.functionbar button:hover{
+  background-color: #bd3232;
+  cursor: pointer;
+}
+.userid{
+  position: absolute;
+  top:90dvh;
+  left:10px;
+  color:#bbbbbb6c;
+  display: flex;
+}
+.userid button{
+  background-color: #bbbbbb00;
+  border: none;
+  color: #bbbbbb6c;
+  font-size: 30px;
+}
+.userid button:hover{
+  cursor: pointer;
+}
+
+.callbyid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px;
+}
+.callbyid .input{
+  background-color: #00000000;
+  border: #87879ba6 2px solid;
+  border-radius: 50px;
+  
+  padding: 10px;
+  width: 30%;
+  color: #dfdfdf;
+  margin-right: 20px;
+}
+.callbyid .input input{
+  outline: none;
+  background-color: #00000000;
+  border: none;
+  width: 100%;
+  color: #dfdfdf;
+}
+.callbyid button{
+  background-color: #00000000;
+  border: #b5b5cea6 2px solid;
+  color: #b5b5cea6;
+  width: 5%;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 20px;
+  height: 40px;
+}
+.callbyid button:hover{
+  border: #cccce7a6 2px solid;
+  color:#cccce7a6;
+  cursor: pointer;
+;
 }

@@ -8,14 +8,12 @@ import AppLink from './AppWithLink';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-
   <BrowserRouter>
   <Routes>
     <Route index element={<App />}></Route>
     <Route path='/:linkpeerId' element={<AppLink/>}/>
   </Routes>
   </BrowserRouter>
-
 );
 
 // If you want to start measuring performance in your app, pass a function
