@@ -74,10 +74,10 @@ function App() {
 
 
   //trigger on the end of the call
-  peerInstance.current.on('close', () => {
-    peerInstance.current.disconnect();
-    peerInstance.current.destroy()
-  });
+  //peerInstance.current.on('close', () => {
+  //peerInstance.current.disconnect();
+  //peerInstance.current.destroy()
+  //});
 
   //end call 
   const EndCall = () => {
